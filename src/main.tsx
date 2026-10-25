@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import './styles.css'
 import './exploration/exploration.css'
 import './community/community.css'
+import './guild/guild.css'
 import App from './App.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
