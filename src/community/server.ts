@@ -1,9 +1,9 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { chmod, mkdir, readFile } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
-import type { NeighborhoodGeometry } from '../exploration/geography.ts'
+import type { BayAreaGeometry, NeighborhoodGeometry } from '../exploration/geography.ts'
 import { describeSite } from './geography.ts'
 import { InputError, localToday, validateJoin, validateProject } from './projects.ts'
 import type { CommunitySnapshot, GardenProject, JoinInput, ProjectInput } from './types.ts'
@@ -20,7 +20,7 @@ interface StoredProject extends ProjectInput {
   members: StoredMember[]
 }
 interface Store { version: 1; projects: StoredProject[] }
-interface Options { dataDirectory: string; geometryPath: string; cookieName?: string }
+interface Options { dataDirectory: string; geometryPath: string; regionalGeometryPath?: string; cookieName?: string }
 
 function publicProject(project: StoredProject, visitor: string): GardenProject {
   const { organizer, submissionKey: _key, members, ...details } = project
@@ -50,7 +50,7 @@ async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> 
   return parsed as Record<string, unknown>
 }
 
-export function createCommunityMiddleware({ dataDirectory, geometryPath, cookieName = 'common-ground-neighbor' }: Options) {
+export function createCommunityMiddleware({ dataDirectory, geometryPath, regionalGeometryPath = resolve(dirname(geometryPath), 'bay-area-map.json'), cookieName = 'common-ground-neighbor' }: Options) {
   const path = resolve(dataDirectory, 'gardens.sqlite')
   let databasePromise: Promise<DatabaseSync> | null = null
   let geometryPromise: Promise<NeighborhoodGeometry> | null = null
@@ -96,7 +96,9 @@ export function createCommunityMiddleware({ dataDirectory, geometryPath, cookieN
     if (typeof row?.value !== 'string') throw new Error('Garden storage is incomplete')
     return parseStore(row.value)
   }
-  const geometry = () => geometryPromise ??= readFile(geometryPath, 'utf8').then(raw => JSON.parse(raw) as NeighborhoodGeometry).catch(error => { geometryPromise = null; throw error })
+  const geometry = () => geometryPromise ??= Promise.all([readFile(geometryPath, 'utf8'), readFile(regionalGeometryPath, 'utf8')])
+    .then(([local, regional]) => ({ ...JSON.parse(local) as NeighborhoodGeometry, region: JSON.parse(regional) as BayAreaGeometry }))
+    .catch(error => { geometryPromise = null; throw error })
   const transact = <T,>(operation: (draft: Store) => T): Promise<T> => {
     const work = queue.then(async () => {
       const db = await database()

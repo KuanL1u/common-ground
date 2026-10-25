@@ -124,7 +124,7 @@ test('project validation rejects invalid resources, missing stewardship details,
   assert.throws(() => validateProject(input({ carePlan: '' })), /Ongoing care/)
   assert.throws(() => validateProject(input({ plants: [], otherPlants: '' })), /want to grow/)
   assert.throws(() => validateProject({ ...input(), plants: ['constructor'] }), /plants/)
-  assert.throws(() => validateProject(input({ site: { ...parkSite, latitude: 0 } })), /pilot map/)
+  assert.throws(() => validateProject(input({ site: { ...parkSite, latitude: 0 } })), /Bay Area map/)
   assert.throws(() => validateProject(input({ conditions: { ...answered, soil: 'clean-bed' } })), /raised-bed/)
   const sanitized = validateProject({ ...input(), organizer: 'forged', members: [{ name: 'forged' }], isOrganizer: true, status: 'closed' })
   assert.equal(Object.hasOwn(sanitized, 'organizer'), false)
@@ -282,5 +282,48 @@ test('the server rechecks mapped water instead of trusting a client’s surface 
     const result = await app.visitor().request('/projects', 'POST', input({ site: selected, permission: 'confirmed', permissionNote: 'A reported permission' }), { 'Idempotency-Key': randomUUID() })
     assert.equal(result.status, 422)
     assert.match(result.result.error!, /mapped water/)
+  } finally { await app.close(); await rm(app.dataDirectory, { recursive: true, force: true }) }
+})
+
+test('a garden outside the Oakland pilot is shared, joinable, editable, and survives a restart', async () => {
+  const before = await harness()
+  const organizer = before.visitor()
+  const site = { ...parkSite, label: 'San Francisco test spot', latitude: 37.7749, longitude: -122.4194 }
+  const created = await organizer.request('/projects', 'POST', input({ site }), { 'Idempotency-Key': randomUUID() })
+  assert.equal(created.status, 201)
+  assert.equal(created.result.site.latitude, site.latitude)
+  assert.equal(created.result.site.longitude, site.longitude)
+  assert.equal(created.result.site.feature, 'unmapped')
+  assert.equal(created.result.site.nearestStreet, null)
+  const neighbor = before.visitor()
+  const joined = await neighbor.request(`/projects/${created.result.id}/join`, 'POST', { name: 'Regional helper', role: 'planning', availability: '' })
+  assert.equal(joined.status, 200)
+  const edited = await organizer.request(`/projects/${created.result.id}`, 'PATCH', { ...input({ site, budget: 180 }), revision: joined.result.revision })
+  assert.equal(edited.status, 200)
+  const token = created.headers.get('set-cookie')!.split(';')[0]
+  await before.close()
+  const after = await harness(before.dataDirectory)
+  try {
+    const restored = await after.visitor().request(`/projects/${created.result.id}`, 'GET', undefined, { Cookie: token })
+    assert.equal(restored.status, 200)
+    assert.equal(restored.result.isOrganizer, true)
+    assert.equal(restored.result.members.length, 1)
+    assert.equal(restored.result.budget, 180)
+    assert.equal(restored.result.site.longitude, site.longitude)
+  } finally { await after.close(); await rm(before.dataDirectory, { recursive: true, force: true }) }
+})
+
+test('the server rechecks regional Bay water and rejects projects outside the expanded coverage', async () => {
+  const app = await harness()
+  try {
+    const organizer = app.visitor()
+    const water = { ...parkSite, latitude: 37.66, longitude: -122.3 }
+    const result = await organizer.request('/projects', 'POST', input({ site: water, permission: 'confirmed', permissionNote: 'A reported permission' }), { 'Idempotency-Key': randomUUID() })
+    assert.equal(result.status, 422)
+    assert.match(result.result.error!, /mapped water/)
+    const outside = await organizer.request('/projects', 'POST', input({ site: { ...parkSite, latitude: 40, longitude: -122 } }), { 'Idempotency-Key': randomUUID() })
+    assert.equal(outside.status, 422)
+    assert.match(outside.result.error!, /Bay Area map/)
+    assert.equal((await organizer.request<CommunitySnapshot>()).result.projects.length, 0)
   } finally { await app.close(); await rm(app.dataDirectory, { recursive: true, force: true }) }
 })

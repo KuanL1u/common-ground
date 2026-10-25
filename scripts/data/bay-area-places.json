@@ -1,0 +1,1193 @@
+{
+  "source": {
+    "name": "OpenStreetMap contributors",
+    "url": "https://www.openstreetmap.org/",
+    "license": "ODbL 1.0",
+    "licenseUrl": "https://www.openstreetmap.org/copyright",
+    "endpoint": "https://overpass-api.de/api/interpreter",
+    "query": "[out:json][timeout:45];node[\"place\"~\"^(city|town)$\"](36.85,-123.6,38.95,-121.1);out body;",
+    "checkedAt": "2026-10-25",
+    "osmBase": "2026-10-25T04:39:59Z"
+  },
+  "places": [
+    {
+      "id": 26819236,
+      "name": "San Francisco",
+      "coordinates": [
+        -122.4075201,
+        37.7879363
+      ],
+      "population": 873965
+    },
+    {
+      "id": 81008084,
+      "name": "Palo Alto",
+      "coordinates": [
+        -122.1598465,
+        37.4443293
+      ],
+      "population": 65364
+    },
+    {
+      "id": 81013838,
+      "name": "Mountain View",
+      "coordinates": [
+        -122.0832101,
+        37.3893889
+      ],
+      "population": 82739
+    },
+    {
+      "id": 100571506,
+      "name": "Berkeley",
+      "coordinates": [
+        -122.272863,
+        37.8708393
+      ],
+      "population": 121363
+    },
+    {
+      "id": 123969081,
+      "name": "Campbell",
+      "coordinates": [
+        -121.944881,
+        37.2870626
+      ],
+      "population": 41793
+    },
+    {
+      "id": 140982915,
+      "name": "Brisbane",
+      "coordinates": [
+        -122.402794,
+        37.687165
+      ],
+      "population": 4282
+    },
+    {
+      "id": 140983265,
+      "name": "Daly City",
+      "coordinates": [
+        -122.47267,
+        37.6904826
+      ],
+      "population": 101005
+    },
+    {
+      "id": 141026735,
+      "name": "Loomis",
+      "coordinates": [
+        -121.193004,
+        38.8212889
+      ],
+      "population": 6699
+    },
+    {
+      "id": 141029011,
+      "name": "Cobb",
+      "coordinates": [
+        -122.723045,
+        38.8221258
+      ],
+      "population": 1778
+    },
+    {
+      "id": 141030472,
+      "name": "Roseville",
+      "coordinates": [
+        -121.2880059,
+        38.7521235
+      ],
+      "population": 107158
+    },
+    {
+      "id": 141031656,
+      "name": "Cloverdale",
+      "coordinates": [
+        -123.0178759,
+        38.8064632
+      ],
+      "population": 8129
+    },
+    {
+      "id": 141041355,
+      "name": "Rocklin",
+      "coordinates": [
+        -121.2357828,
+        38.7907339
+      ],
+      "population": 50131
+    },
+    {
+      "id": 141047815,
+      "name": "Lincoln",
+      "coordinates": [
+        -121.29318,
+        38.8915741
+      ],
+      "population": 39566
+    },
+    {
+      "id": 150932114,
+      "name": "Davis",
+      "coordinates": [
+        -121.739005,
+        38.5435526
+      ],
+      "population": 66850
+    },
+    {
+      "id": 150934574,
+      "name": "Santa Rosa",
+      "coordinates": [
+        -122.7141049,
+        38.4404925
+      ],
+      "population": 174972
+    },
+    {
+      "id": 150934874,
+      "name": "Mill Valley",
+      "coordinates": [
+        -122.5449763,
+        37.9060368
+      ],
+      "population": 13323
+    },
+    {
+      "id": 150935621,
+      "name": "Galt",
+      "coordinates": [
+        -121.2999485,
+        38.2546373
+      ],
+      "population": 23396
+    },
+    {
+      "id": 150936720,
+      "name": "Windsor",
+      "coordinates": [
+        -122.8163802,
+        38.5471327
+      ],
+      "population": 25294
+    },
+    {
+      "id": 150936809,
+      "name": "Tracy",
+      "coordinates": [
+        -121.420139,
+        37.7385507
+      ],
+      "population": 98337
+    },
+    {
+      "id": 150937176,
+      "name": "Mountain House",
+      "coordinates": [
+        -121.542726,
+        37.7832614
+      ],
+      "population": 24499
+    },
+    {
+      "id": 150937607,
+      "name": "Atherton",
+      "coordinates": [
+        -122.2058272,
+        37.453773
+      ],
+      "population": 6914
+    },
+    {
+      "id": 150938195,
+      "name": "Santa Clara",
+      "coordinates": [
+        -121.955174,
+        37.3541132
+      ],
+      "population": 130365
+    },
+    {
+      "id": 150938204,
+      "name": "Half Moon Bay",
+      "coordinates": [
+        -122.428586,
+        37.4635519
+      ],
+      "population": 12308
+    },
+    {
+      "id": 150938236,
+      "name": "Clayton",
+      "coordinates": [
+        -121.9357878,
+        37.9411668
+      ],
+      "population": 12265
+    },
+    {
+      "id": 150938556,
+      "name": "Pacifica",
+      "coordinates": [
+        -122.4995234,
+        37.5980374
+      ],
+      "population": 37327
+    },
+    {
+      "id": 150938939,
+      "name": "South San Francisco",
+      "coordinates": [
+        -122.4168664,
+        37.6535403
+      ],
+      "population": 63632
+    },
+    {
+      "id": 150939578,
+      "name": "Citrus Heights",
+      "coordinates": [
+        -121.2810611,
+        38.7071247
+      ],
+      "population": 88890
+    },
+    {
+      "id": 150940994,
+      "name": "Alamo",
+      "coordinates": [
+        -122.032184,
+        37.8502033
+      ],
+      "population": 15314
+    },
+    {
+      "id": 150942279,
+      "name": "Burlingame",
+      "coordinates": [
+        -122.3473099,
+        37.5780965
+      ],
+      "population": 27573
+    },
+    {
+      "id": 150942439,
+      "name": "North Fair Oaks",
+      "coordinates": [
+        -122.2017408,
+        37.4757074
+      ],
+      "population": 14687
+    },
+    {
+      "id": 150942648,
+      "name": "Alameda",
+      "coordinates": [
+        -122.241635,
+        37.7652076
+      ],
+      "population": 77624
+    },
+    {
+      "id": 150943437,
+      "name": "San Ramon",
+      "coordinates": [
+        -121.9544387,
+        37.7648021
+      ],
+      "population": 75995
+    },
+    {
+      "id": 150943849,
+      "name": "Hercules",
+      "coordinates": [
+        -122.2885808,
+        38.0171441
+      ],
+      "population": 26276
+    },
+    {
+      "id": 150945281,
+      "name": "Dublin",
+      "coordinates": [
+        -121.9357918,
+        37.7021521
+      ],
+      "population": 64826
+    },
+    {
+      "id": 150945599,
+      "name": "Guerneville",
+      "coordinates": [
+        -122.9987407,
+        38.5020445
+      ],
+      "population": 0
+    },
+    {
+      "id": 150945869,
+      "name": "Bay Point",
+      "coordinates": [
+        -121.9578477,
+        38.0270429
+      ],
+      "population": 21349
+    },
+    {
+      "id": 150946243,
+      "name": "Boulder Creek",
+      "coordinates": [
+        -122.1221869,
+        37.1260578
+      ],
+      "population": 4923
+    },
+    {
+      "id": 150946345,
+      "name": "Redwood City",
+      "coordinates": [
+        -122.232523,
+        37.4863239
+      ],
+      "population": 88314
+    },
+    {
+      "id": 150946896,
+      "name": "Morgan Hill",
+      "coordinates": [
+        -121.6544974,
+        37.130408
+      ],
+      "population": 45952
+    },
+    {
+      "id": 150947378,
+      "name": "Vacaville",
+      "coordinates": [
+        -121.9877444,
+        38.3565773
+      ],
+      "population": 100670
+    },
+    {
+      "id": 150947890,
+      "name": "Saratoga",
+      "coordinates": [
+        -122.0230146,
+        37.2638324
+      ],
+      "population": 30153
+    },
+    {
+      "id": 150948421,
+      "name": "Lathrop",
+      "coordinates": [
+        -121.27661,
+        37.8227046
+      ],
+      "population": 14924
+    },
+    {
+      "id": 150948591,
+      "name": "Rohnert Park",
+      "coordinates": [
+        -122.701098,
+        38.3396367
+      ],
+      "population": 41083
+    },
+    {
+      "id": 150948838,
+      "name": "Sausalito",
+      "coordinates": [
+        -122.485469,
+        37.8590272
+      ],
+      "population": 7207
+    },
+    {
+      "id": 150949408,
+      "name": "Pleasanton",
+      "coordinates": [
+        -121.8746789,
+        37.6624312
+      ],
+      "population": 81777
+    },
+    {
+      "id": 150949805,
+      "name": "Fairfax",
+      "coordinates": [
+        -122.587967,
+        37.9872935
+      ],
+      "population": 7120
+    },
+    {
+      "id": 150950648,
+      "name": "Piedmont",
+      "coordinates": [
+        -122.231635,
+        37.8243715
+      ],
+      "population": 11135
+    },
+    {
+      "id": 150950777,
+      "name": "Fremont",
+      "coordinates": [
+        -121.988571,
+        37.5482697
+      ],
+      "population": 241110
+    },
+    {
+      "id": 150951857,
+      "name": "Los Gatos",
+      "coordinates": [
+        -121.9746797,
+        37.226611
+      ],
+      "population": 30222
+    },
+    {
+      "id": 150953250,
+      "name": "Healdsburg",
+      "coordinates": [
+        -122.870138,
+        38.6106812
+      ],
+      "population": 11845
+    },
+    {
+      "id": 150953279,
+      "name": "Fairfield",
+      "coordinates": [
+        -122.039966,
+        38.2493581
+      ],
+      "population": 117133
+    },
+    {
+      "id": 150953945,
+      "name": "Union City",
+      "coordinates": [
+        -122.0215737,
+        37.5872576
+      ],
+      "population": 74107
+    },
+    {
+      "id": 150954502,
+      "name": "Hillsborough",
+      "coordinates": [
+        -122.362529,
+        37.557252
+      ],
+      "population": 10825
+    },
+    {
+      "id": 150954641,
+      "name": "Moraga",
+      "coordinates": [
+        -122.12883,
+        37.834897
+      ],
+      "population": 17783
+    },
+    {
+      "id": 150954849,
+      "name": "Millbrae",
+      "coordinates": [
+        -122.400941,
+        37.598958
+      ],
+      "population": 21536
+    },
+    {
+      "id": 150955273,
+      "name": "Cotati",
+      "coordinates": [
+        -122.706844,
+        38.3266798
+      ],
+      "population": 7170
+    },
+    {
+      "id": 150955856,
+      "name": "San Pablo",
+      "coordinates": [
+        -122.3455263,
+        37.9621457
+      ],
+      "population": 30990
+    },
+    {
+      "id": 150956306,
+      "name": "Petaluma",
+      "coordinates": [
+        -122.636465,
+        38.2325829
+      ],
+      "population": 60438
+    },
+    {
+      "id": 150957262,
+      "name": "Tiburon",
+      "coordinates": [
+        -122.460808,
+        37.8775332
+      ],
+      "population": 9146
+    },
+    {
+      "id": 150958884,
+      "name": "American Canyon",
+      "coordinates": [
+        -122.255183,
+        38.1785248
+      ],
+      "population": 15919
+    },
+    {
+      "id": 150959473,
+      "name": "Corte Madera",
+      "coordinates": [
+        -122.527475,
+        37.9254806
+      ],
+      "population": 9313
+    },
+    {
+      "id": 150959579,
+      "name": "Lodi",
+      "coordinates": [
+        -121.2736022,
+        38.1342805
+      ],
+      "population": 66348
+    },
+    {
+      "id": 150959789,
+      "name": "Sacramento",
+      "coordinates": [
+        -121.493895,
+        38.5810606
+      ],
+      "population": 490712
+    },
+    {
+      "id": 150959795,
+      "name": "Vallejo",
+      "coordinates": [
+        -122.2566367,
+        38.1040864
+      ],
+      "population": 121692
+    },
+    {
+      "id": 150959813,
+      "name": "Calistoga",
+      "coordinates": [
+        -122.579705,
+        38.5787966
+      ],
+      "population": 5214
+    },
+    {
+      "id": 150960307,
+      "name": "Pleasant Hill",
+      "coordinates": [
+        -122.0607963,
+        37.9479786
+      ],
+      "population": 34839
+    },
+    {
+      "id": 150960475,
+      "name": "Patterson",
+      "coordinates": [
+        -121.1296949,
+        37.471623
+      ],
+      "population": 20413
+    },
+    {
+      "id": 150960561,
+      "name": "Napa",
+      "coordinates": [
+        -122.2855293,
+        38.2971367
+      ],
+      "population": 80434
+    },
+    {
+      "id": 150960787,
+      "name": "Live Oak",
+      "coordinates": [
+        -121.9847063,
+        36.9715339
+      ],
+      "population": 8392
+    },
+    {
+      "id": 150961497,
+      "name": "West Sacramento",
+      "coordinates": [
+        -121.530234,
+        38.5804609
+      ],
+      "population": 44162
+    },
+    {
+      "id": 150961709,
+      "name": "Forestville",
+      "coordinates": [
+        -122.890272,
+        38.4735237
+      ],
+      "population": 0
+    },
+    {
+      "id": 150962234,
+      "name": "Oakley",
+      "coordinates": [
+        -121.7124536,
+        37.9974219
+      ],
+      "population": 42543
+    },
+    {
+      "id": 150963006,
+      "name": "Stockton",
+      "coordinates": [
+        -121.290779,
+        37.9577016
+      ],
+      "population": 305658
+    },
+    {
+      "id": 150963088,
+      "name": "Danville",
+      "coordinates": [
+        -122.0008254,
+        37.8225892
+      ],
+      "population": 44510
+    },
+    {
+      "id": 150963100,
+      "name": "San Bruno",
+      "coordinates": [
+        -122.4145986,
+        37.6248536
+      ],
+      "population": 41114
+    },
+    {
+      "id": 150963205,
+      "name": "San Leandro",
+      "coordinates": [
+        -122.1560768,
+        37.7249296
+      ],
+      "population": 88815
+    },
+    {
+      "id": 150963377,
+      "name": "Sunnyvale",
+      "coordinates": [
+        -122.036349,
+        37.3688301
+      ],
+      "population": 152703
+    },
+    {
+      "id": 150964342,
+      "name": "Larkspur",
+      "coordinates": [
+        -122.5352539,
+        37.9340915
+      ],
+      "population": 11746
+    },
+    {
+      "id": 150964497,
+      "name": "San Rafael",
+      "coordinates": [
+        -122.5316686,
+        37.9747795
+      ],
+      "population": 58704
+    },
+    {
+      "id": 150964675,
+      "name": "Hayward",
+      "coordinates": [
+        -122.080796,
+        37.6688205
+      ],
+      "population": 159203
+    },
+    {
+      "id": 150964755,
+      "name": "Albany",
+      "coordinates": [
+        -122.298351,
+        37.8871621
+      ],
+      "population": 19696
+    },
+    {
+      "id": 150965059,
+      "name": "Pinole",
+      "coordinates": [
+        -122.2988587,
+        38.0043667
+      ],
+      "population": 19250
+    },
+    {
+      "id": 150965723,
+      "name": "Hollister",
+      "coordinates": [
+        -121.4016021,
+        36.8524545
+      ],
+      "population": 35690
+    },
+    {
+      "id": 150966243,
+      "name": "Saint Helena",
+      "coordinates": [
+        -122.470042,
+        38.5052288
+      ],
+      "population": 0
+    },
+    {
+      "id": 150966332,
+      "name": "Cupertino",
+      "coordinates": [
+        -122.0322895,
+        37.3228934
+      ],
+      "population": 59276
+    },
+    {
+      "id": 150967056,
+      "name": "Belmont",
+      "coordinates": [
+        -122.2941914,
+        37.5164926
+      ],
+      "population": 25835
+    },
+    {
+      "id": 150967366,
+      "name": "Folsom",
+      "coordinates": [
+        -121.176058,
+        38.6779591
+      ],
+      "population": 66123
+    },
+    {
+      "id": 150967736,
+      "name": "Walnut Creek",
+      "coordinates": [
+        -122.0618702,
+        37.9020731
+      ],
+      "population": 70166
+    },
+    {
+      "id": 150968531,
+      "name": "Benicia",
+      "coordinates": [
+        -122.1585777,
+        38.049365
+      ],
+      "population": 28240
+    },
+    {
+      "id": 150968564,
+      "name": "Lafayette",
+      "coordinates": [
+        -122.1180201,
+        37.8857582
+      ],
+      "population": 26638
+    },
+    {
+      "id": 150968654,
+      "name": "Elk Grove",
+      "coordinates": [
+        -121.3716178,
+        38.4087993
+      ],
+      "population": 166913
+    },
+    {
+      "id": 150969035,
+      "name": "Castro Valley",
+      "coordinates": [
+        -122.0857432,
+        37.6945519
+      ],
+      "population": 61388
+    },
+    {
+      "id": 150969859,
+      "name": "Rancho Cordova",
+      "coordinates": [
+        -121.302728,
+        38.5890723
+      ],
+      "population": 59921
+    },
+    {
+      "id": 150970966,
+      "name": "Newark",
+      "coordinates": [
+        -122.0402399,
+        37.5296593
+      ],
+      "population": 49149
+    },
+    {
+      "id": 150971490,
+      "name": "East Palo Alto",
+      "coordinates": [
+        -122.141075,
+        37.4688273
+      ],
+      "population": 32784
+    },
+    {
+      "id": 150971732,
+      "name": "Scotts Valley",
+      "coordinates": [
+        -122.014684,
+        37.0510595
+      ],
+      "population": 11150
+    },
+    {
+      "id": 150971776,
+      "name": "Discovery Bay",
+      "coordinates": [
+        -121.602247,
+        37.9042862
+      ],
+      "population": 13352
+    },
+    {
+      "id": 150971841,
+      "name": "El Cerrito",
+      "coordinates": [
+        -122.301411,
+        37.9154056
+      ],
+      "population": 25508
+    },
+    {
+      "id": 150972339,
+      "name": "Capitola",
+      "coordinates": [
+        -121.9533502,
+        36.974736
+      ],
+      "population": 9507
+    },
+    {
+      "id": 150972487,
+      "name": "Concord",
+      "coordinates": [
+        -122.0335624,
+        37.9768525
+      ],
+      "population": 129295
+    },
+    {
+      "id": 150972891,
+      "name": "Martinez",
+      "coordinates": [
+        -122.1338674,
+        38.0138934
+      ],
+      "population": 38297
+    },
+    {
+      "id": 150972893,
+      "name": "Sebastopol",
+      "coordinates": [
+        -122.824222,
+        38.4021038
+      ],
+      "population": 7521
+    },
+    {
+      "id": 150973005,
+      "name": "Sonoma",
+      "coordinates": [
+        -122.4578582,
+        38.2919984
+      ],
+      "population": 9897
+    },
+    {
+      "id": 150973078,
+      "name": "Novato",
+      "coordinates": [
+        -122.5681191,
+        38.1061979
+      ],
+      "population": 51518
+    },
+    {
+      "id": 150973207,
+      "name": "Suisun City",
+      "coordinates": [
+        -122.040244,
+        38.2382474
+      ],
+      "population": 29663
+    },
+    {
+      "id": 150974198,
+      "name": "Milpitas",
+      "coordinates": [
+        -121.8989248,
+        37.4332273
+      ],
+      "population": 84196
+    },
+    {
+      "id": 150975918,
+      "name": "San Carlos",
+      "coordinates": [
+        -122.261823,
+        37.504936
+      ],
+      "population": 27002
+    },
+    {
+      "id": 150979346,
+      "name": "Brentwood",
+      "coordinates": [
+        -121.696026,
+        37.9317766
+      ],
+      "population": 64474
+    },
+    {
+      "id": 150979479,
+      "name": "Dixon",
+      "coordinates": [
+        -121.8232958,
+        38.4454641
+      ],
+      "population": 20698
+    },
+    {
+      "id": 150979583,
+      "name": "Antioch",
+      "coordinates": [
+        -121.8106925,
+        38.0093296
+      ],
+      "population": 111502
+    },
+    {
+      "id": 150980203,
+      "name": "Emeryville",
+      "coordinates": [
+        -122.2865266,
+        37.8314089
+      ],
+      "population": 12086
+    },
+    {
+      "id": 150980683,
+      "name": "Oakland",
+      "coordinates": [
+        -122.271356,
+        37.8044557
+      ],
+      "population": 433031
+    },
+    {
+      "id": 150980686,
+      "name": "Rio Vista",
+      "coordinates": [
+        -121.6913439,
+        38.1557502
+      ],
+      "population": 9718
+    },
+    {
+      "id": 150980690,
+      "name": "San Anselmo",
+      "coordinates": [
+        -122.561503,
+        37.9744323
+      ],
+      "population": 12043
+    },
+    {
+      "id": 150981209,
+      "name": "Menlo Park",
+      "coordinates": [
+        -122.177992,
+        37.4519671
+      ],
+      "population": 33780
+    },
+    {
+      "id": 150981306,
+      "name": "Ripon",
+      "coordinates": [
+        -121.1246966,
+        37.7394666
+      ],
+      "population": 14047
+    },
+    {
+      "id": 150981381,
+      "name": "Richmond",
+      "coordinates": [
+        -122.347748,
+        37.9357576
+      ],
+      "population": 110567
+    },
+    {
+      "id": 150982065,
+      "name": "Orinda",
+      "coordinates": [
+        -122.1796888,
+        37.8771476
+      ],
+      "population": 19926
+    },
+    {
+      "id": 276375232,
+      "name": "Manteca",
+      "coordinates": [
+        -121.2117148,
+        37.7986184
+      ],
+      "population": 81592
+    },
+    {
+      "id": 1283669332,
+      "name": "Los Altos",
+      "coordinates": [
+        -122.116578,
+        37.3790629
+      ],
+      "population": 30089
+    },
+    {
+      "id": 1616078487,
+      "name": "Santa Cruz",
+      "coordinates": [
+        -122.0294673,
+        36.9743626
+      ],
+      "population": 64220
+    },
+    {
+      "id": 1676617244,
+      "name": "Watsonville",
+      "coordinates": [
+        -121.7529071,
+        36.9092773
+      ],
+      "population": 51199
+    },
+    {
+      "id": 1690212988,
+      "name": "San Jose",
+      "coordinates": [
+        -121.890591,
+        37.3361663
+      ],
+      "population": 1013240
+    },
+    {
+      "id": 1696924412,
+      "name": "Foster City",
+      "coordinates": [
+        -122.2688522,
+        37.5600336
+      ],
+      "population": 30567
+    },
+    {
+      "id": 1696924414,
+      "name": "San Mateo",
+      "coordinates": [
+        -122.3253265,
+        37.5629997
+      ],
+      "population": 103536
+    },
+    {
+      "id": 1723065716,
+      "name": "Gilroy",
+      "coordinates": [
+        -121.5631723,
+        37.0065078
+      ],
+      "population": 59032
+    },
+    {
+      "id": 2104792669,
+      "name": "Livermore",
+      "coordinates": [
+        -121.768053,
+        37.6820583
+      ],
+      "population": 86803
+    },
+    {
+      "id": 2584100971,
+      "name": "Woodland",
+      "coordinates": [
+        -121.7733285,
+        38.6786109
+      ],
+      "population": 55468
+    },
+    {
+      "id": 4282227905,
+      "name": "Pittsburg",
+      "coordinates": [
+        -121.8853861,
+        38.0267711
+      ],
+      "population": 72588
+    },
+    {
+      "id": 6199249846,
+      "name": "Yountville",
+      "coordinates": [
+        -122.359506,
+        38.4022008
+      ],
+      "population": 3436
+    },
+    {
+      "id": 13363878637,
+      "name": "Watsonville",
+      "coordinates": [
+        -121.7557942,
+        36.9089338
+      ],
+      "population": 0
+    }
+  ]
+}

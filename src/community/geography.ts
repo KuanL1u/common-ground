@@ -1,4 +1,4 @@
-import type { NeighborhoodGeometry } from '../exploration/geography.ts'
+import { bayAreaBounds, type NeighborhoodGeometry, type RegionalPolygon } from '../exploration/geography.ts'
 import type { SelectedSite, SiteEnvironment } from './types.ts'
 
 export const pilotBounds = [-122.299, 37.7965, -122.2365, 37.827] as const
@@ -7,11 +7,17 @@ export function inPilot(latitude: number, longitude: number): boolean {
   return Number.isFinite(latitude) && Number.isFinite(longitude) && latitude >= pilotBounds[1] && latitude <= pilotBounds[3] && longitude >= pilotBounds[0] && longitude <= pilotBounds[2]
 }
 
+export function inBayArea(latitude: number, longitude: number): boolean {
+  return Number.isFinite(latitude) && Number.isFinite(longitude) && latitude >= bayAreaBounds[1] && latitude <= bayAreaBounds[3] && longitude >= bayAreaBounds[0] && longitude <= bayAreaBounds[2]
+}
+
 export function geographicPoint(map: NeighborhoodGeometry, [x, y]: number[]): { latitude: number; longitude: number } | null {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null
   const [west, south, east, north] = map.bounds
   const longitude = west + (x - 65) / (map.width - 130) * (east - west)
   const latitude = north - (y - 50) / (map.height - 100) * (north - south)
-  return latitude < south || latitude > north || longitude < west || longitude > east ? null : { latitude, longitude }
+  const coverage = map.region?.bounds ?? map.bounds
+  return latitude < coverage[1] || latitude > coverage[3] || longitude < coverage[0] || longitude > coverage[2] ? null : { latitude, longitude }
 }
 
 export function mapPoint(map: NeighborhoodGeometry, site: { latitude: number; longitude: number }): number[] {
@@ -28,6 +34,10 @@ export function pointInPolygon([x, y]: number[], points: number[][]): boolean {
   return inside
 }
 
+export function inRegionalPolygon(point: number[], polygon: RegionalPolygon): boolean {
+  return Boolean(polygon.rings[0] && pointInPolygon(point, polygon.rings[0]) && !polygon.rings.slice(1).some(ring => pointInPolygon(point, ring)))
+}
+
 function segmentDistance(point: number[], a: number[], b: number[]): number {
   const dx = b[0] - a[0], dy = b[1] - a[1]
   const t = dx || dy ? Math.max(0, Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (dx * dx + dy * dy))) : 0
@@ -35,6 +45,14 @@ function segmentDistance(point: number[], a: number[], b: number[]): number {
 }
 
 export function describeSite(map: NeighborhoodGeometry, coordinates: { latitude: number; longitude: number }): SelectedSite {
+  if (!inPilot(coordinates.latitude, coordinates.longitude)) {
+    const point = [coordinates.longitude, coordinates.latitude]
+    const water = Boolean(map.region && (!map.region.land.some(shape => inRegionalPolygon(point, shape)) || map.region.lakes.some(shape => inRegionalPolygon(point, shape))))
+    const cities = map.region?.cities ?? []
+    const distance = (city: typeof cities[number]) => Math.hypot((city.coordinates[0] - coordinates.longitude) * Math.cos(coordinates.latitude * Math.PI / 180), city.coordinates[1] - coordinates.latitude)
+    const city = [...cities].sort((a, b) => distance(a) - distance(b))[0]
+    return { ...coordinates, label: city && distance(city) < .35 ? `Near ${city.name}` : 'Bay Area spot', feature: water ? 'water' : 'unmapped', featureName: water ? 'Regional mapped water' : 'Regional map · site details unknown', nearestStreet: null }
+  }
   const point = mapPoint(map, coordinates)
   let nearestStreet: string | null = null
   let distance = Infinity
@@ -55,6 +73,10 @@ export function describeSite(map: NeighborhoodGeometry, coordinates: { latitude:
   const feature = water ? 'water' : building ? 'building' : roadDistance < roadThreshold ? 'road' : green ? 'green' : 'unmapped'
   const featureName = (feature === 'water' ? water?.name : feature === 'road' ? road?.name : feature === 'green' ? green?.name : null) || ({ water: 'Mapped water', building: 'Mapped building', road: 'Mapped road', green: 'Mapped green space', unmapped: 'Selected spot' } as const)[feature]
   return { ...coordinates, label: green?.name || (nearestStreet ? `Near ${nearestStreet}` : 'East Bay spot'), feature, featureName, nearestStreet }
+}
+
+export function climateAt(environment: SiteEnvironment, site: { latitude: number; longitude: number }) {
+  return inPilot(site.latitude, site.longitude) ? environment.climate : null
 }
 
 export function terrainAt(environment: SiteEnvironment, site: { latitude: number; longitude: number }): { elevation: number; slope: number | null } | null {

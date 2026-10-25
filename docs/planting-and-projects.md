@@ -1,12 +1,14 @@
 # Planting checks and neighborhood projects
 
-Implemented October 25, 2026 (UTC). The experience stays on the existing cartoon East Bay map; new controls are Check a spot, Start a garden, and Projects.
+Implemented October 25, 2026 (UTC). The experience starts on the cartoon East Bay map and can zoom out across the Bay Area. Controls are Check a spot, Start a garden, and Projects.
 
 ## Geography and the planting check
 
 Every chosen screen point is inverted through the active map camera and the saved map projection to a latitude/longitude. Zooming and panning do not change the meaning of a chosen point. Dragging pans without opening a check; Enter or Choose center offers keyboard selection. Existing place drawings can be checked in Check a spot mode while Explore retains their educational visits.
 
 OpenStreetMap polygons identify mapped water, buildings, and green space, with nearby road geometry providing a short spot label. These features are not ownership records or soil measurements. The server repeats the mapped-feature check when creating or editing a project; a client cannot claim a water pin is confirmed garden land.
+
+Outside the detailed Oakland window, the saved regional layer provides generalized land/water context and a nearby city label. Streets, buildings, planting-site geometry, elevation, slope, and local climate are unknown there. No distant point is labeled with the nearest Oakland street. Choosing a city label zooms the map; an empty spot or Choose center selects geographic coordinates. Garden proposals, joining, and organizer edits work throughout the rectangular Bay Area coverage window documented in [map provenance](map-provenance.md).
 
 The six-plant shortlist covers food and habitat: tomatoes, lettuce, kale, California poppy, California fuchsia, and California buckwheat. Its screening rules use reported sun, water, drainage, growing medium, soil-review status, and planting season. They return Check first, Needs a change, or Promising with your answers. Incomplete observations never produce Promising. Water access includes establishment care even for low-water natives. California-native status does not establish that every variety is locally native or suitable at every site.
 
@@ -21,6 +23,8 @@ This is a simplified educational screen, not professional site design. It does n
 - [Open-Meteo / Copernicus DEM GLO-90 (2021)](https://open-meteo.com/en/docs/elevation-api): 504 elevation samples in a 28 × 18 grid covering the same pilot bounds. Source resolution is 90 m; sample spacing is about 205 m. Displayed height uses the nearest sample. Area slope uses neighboring elevation differences and geographic distance; it cannot resolve beds, walls, street drains, or small slopes.
 
 The model gives average annual precipitation of 477.7 mm and June–August precipitation of 1.4 mm over this reference period. These are regional context, not watering prescriptions. The same climate reference is deliberately used throughout this small Oakland window instead of inventing differences between adjacent map clicks.
+
+The climate reference is only shown for spots within the Oakland pilot. The terrain grid likewise returns no value beyond its own bounds. Other Bay Area spots display **Unknown** for these measurements and an explicit coverage note; their plant shortlist uses reported observations, with local climate and variety review still required.
 
 `src/data/site-environment.json` records source names, documentation links, exact request URLs, requested/returned coordinates, model period, resolutions, bounds, and check date. The build copies it to a locally served asset. A missing dataset produces Unknown rather than invented measurements. Attribution is visible in the site’s expandable evidence and Sources.
 

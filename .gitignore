@@ -10,6 +10,7 @@ public/data/
 scripts/data/*.osm
 scripts/data/oakland-weather-*.json
 scripts/data/east-bay-elevation-*.json
+scripts/data/natural-earth/
 .local-data/
 *.sqlite
 *.sqlite-shm

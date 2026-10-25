@@ -1,6 +1,6 @@
 # Local prototype verification
 
-Latest verification: **October 25, 2026 (UTC)**, with **32 passing automated tests**, a passing TypeScript/production build, and browser checks for the continuous map, planting checks, and shared garden projects. The dated sections below record the prototype's successive versions.
+Latest verification: **October 25, 2026 (UTC)**, with **41 passing automated tests**, a passing TypeScript/production build, and browser checks for Bay Area zooming, planting checks, and shared garden projects. The dated sections below record the prototype's successive versions.
 
 ## Initial exploration prototype — October 24, 2026
 
@@ -91,3 +91,20 @@ These are implementation checks, not a youth learning evaluation or pedestrian-n
 Screenshots: `artifacts/east-bay-plant-check.png`, `artifacts/east-bay-plant-check-mobile.png`, `artifacts/east-bay-garden-project.png`, `artifacts/east-bay-garden-project-mobile.png`, `artifacts/east-bay-garden-form-mobile.png`, and `artifacts/east-bay-garden-resources-mobile.png`.
 
 The site check is a preliminary, source-attributed shortlist using regional models and visitor observations. These software checks do not certify a planting site or establish educational effectiveness. Neighborhood access from other computers needs an online deployment.
+
+## Bay Area overview and expansion — October 25, 2026 (UTC)
+
+- **41 automated tests pass.** Nine additional checks cover the unchanged initial camera and anchor projection, regional zoom limits on desktop and phone sizes, geographic picking, panning bounds, polygon holes and actual coastline, unknown environmental coverage, source/data consistency, regional garden persistence and participation, and server water/bounds checks.
+- TypeScript and the production build pass. The main JavaScript chunk is approximately 453 KB / 139 KB gzip. The locally saved regional overview is about 200 KB uncompressed, alongside the unchanged detailed Oakland geometry.
+- Repeated **Zoom out** clicks reached the same fitted view as **Show whole Bay Area**, with a disabled minus button at the finite limit. The original Oakland camera transform was restored exactly by the frame button.
+- City labels moved the camera to San Francisco and San Jose. Keyboard arrows and dragging changed position while retaining zoom; dragging did not open a planting check. The regional overview prioritizes fewer city labels at wider zooms, and water labels avoid occupied areas.
+- A chosen San Francisco point showed its geographic coordinates, regional context, and **Unknown** elevation, slope, and summer rain. Its expanded evidence omitted the Oakland climate chart and explained the coverage gap.
+- At **390 × 844**, the regional map showed Oakland, San Francisco, San Jose, and Santa Rosa with 16-pixel city labels and no horizontal page overflow. Label spacing reserves the actual phone hint and controls rather than unnecessarily blocking the lower map.
+- Created a clearly labeled **Demo Bay Area garden** near San Jose on an isolated preview database, with California poppy, a $180 budget, three volunteers, planning/planting roles, a care plan, and pending permission. A separate local visitor joined as a planner. The organizer saw the same saved member and 1/3 volunteer count after reload.
+- Reloading the regional project link focused its geographic area. Clicking the actual garden pin reopened the same project and saved team. The phone project detail had a 346-pixel content width within a 390-pixel page.
+- Clicking **Oakland · 4 places** restored all four learning destinations. Keyboard Enter at Farm Park still opened its illustrated scene and interactive discoveries.
+- The playtest and neighbor tabs had no warning/error logs. The user's live game retained **2 discoveries and one existing garden project**; the demo and participation checks stayed in the separate preview database. Temporary phone settings were reset.
+
+Screenshots: `artifacts/bay-area-overview.png`, `artifacts/bay-area-overview-mobile.png`, `artifacts/bay-area-site-check.png`, and `artifacts/bay-area-garden-project-mobile.png`. The garden is a software playtest, not a real site-work invitation.
+
+The wider map is generalized geographic context, not new site-level evidence or new educational destinations. Expanding detailed coverage and lessons needs additional local data, source checks, and review.

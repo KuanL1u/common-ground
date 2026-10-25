@@ -1,6 +1,6 @@
-# East Bay map provenance
+# East Bay and Bay Area map provenance
 
-The current game uses one continuous **Oakland pilot window** connecting West Oakland, the Lake Merritt area, and Ivy Hill. Its display name is **East Bay**. Original cartoon SVG art sits over projected OpenStreetMap streets, buildings, parks, trees, and water shapes.
+The game starts in one continuous **Oakland pilot window** connecting West Oakland, the Lake Merritt area, and Ivy Hill. Its initial display name is **East Bay**. Original cartoon SVG art sits over projected OpenStreetMap streets, buildings, parks, trees, and water shapes. Zooming out reveals a separately saved **Bay Area** overview; the original starting camera, local geometry, anchors, and routes are retained.
 
 - Attribution: **© OpenStreetMap contributors**.
 - Data license: **ODbL 1.0**.
@@ -41,3 +41,27 @@ python3 scripts/prepare-world.py east-bay
 The downloader uses twelve small overlapping boxes and at most two simultaneous requests. Raw XML tiles are ignored. Keep the source manifest and derived attribution when distributing the map.
 
 The earlier `west-oakland-map.json` and `ivy-hill-map.json` remain as historical source artifacts. They are no longer separate game views. Their corresponding generator arguments still work with the saved legacy extracts.
+
+## Bay Area overview
+
+- Regional navigation/picking bounds, west/south/east/north: `[-123.6, 36.85, -121.1, 38.95]`. This rectangular window covers the nine-county Bay Area and some neighboring context; it is not an administrative boundary.
+- Background geometry bounds: `[-125, 35.7, -119.7, 40.1]`. The larger context halo fills wide and tall screens without treating the edge of the extract as a coastline.
+- Natural Earth **1:10 million** land, lakes, roads, and urban areas provide the generalized geographic layer. Source: [Natural Earth downloads](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/), using the [maintainer’s GeoJSON repository](https://github.com/nvkelso/natural-earth-vector) pinned to a revision. Geometry is [public domain](https://www.naturalearthdata.com/about/terms-of-use/).
+- City and town names/points use a saved OpenStreetMap place-node extract under **ODbL 1.0**. The regional dataset includes 130 unique labels; wider views prioritize a smaller selection and avoid collisions.
+- Source check: **October 25, 2026 (UTC)**. Exact Natural Earth revision, file URLs, SHA-256 hashes, and terms are retained in `scripts/data/bay-area-source.json`. The exact single Overpass query, endpoint, extract timestamp, and filtered public node records are in `scripts/data/bay-area-places.json`.
+- Derived layer: `src/data/bay-area-map.json`, served at `/data/bay-area-map.json`, about **200 KB uncompressed**. It contains 4 land polygons, 2 lake polygons, 45 urban-area polygons, and 187 clipped road lines. Population fields are historical hints for label ordering, not displayed population statistics.
+
+The overview stays in geographic coordinates, projected into the unchanged local map coordinate system at render time. Polygon holes are preserved. Small features, exact shorelines, streets, parcels, and site conditions are unresolved at this scale. The detailed Oakland layer reappears on zoom-in; elsewhere site geometry and local environmental evidence remain unknown. Four learning places are grouped as “Oakland · 4 places” in the overview. City labels move the camera rather than inventing visitable sites or educational activities.
+
+Camera helpers in `src/exploration/map-camera.ts` calculate a viewport-dependent regional fit, finite zoom limits, panning bounds, and screen-to-world picks. The globe fits the region, the frame restores the original view, and garden pins use their saved geographic coordinates at every zoom.
+
+Optional refresh, using Node and Python 3’s standard library:
+
+```sh
+node scripts/download-bay-area.mjs
+node scripts/download-bay-area-places.mjs
+python3 scripts/prepare-bay-area.py
+node scripts/generate-resource-pages.mjs
+```
+
+Natural Earth downloads run two at a time. The city downloader runs one read-only query and retains only public city/town fields; it is manually invoked and does not retry automatically. Raw Natural Earth files are ignored by Git. Normal dev/build copies the committed assets and makes no tile, Overpass, or other runtime geographic API calls for the cartoon map. Retain both Natural Earth provenance and OpenStreetMap attribution when reusing the layer.

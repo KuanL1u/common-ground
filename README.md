@@ -2,13 +2,13 @@
 
 **Explore your neighborhood. Learn how land works. Grow something together.**
 
-Common Ground is a playable cartoon map of the East Bay that connects environmental learning with real community places and garden projects. Visit a farm, park, garden, or library; experiment with soil, water, plants, and shared resources; then check a planting spot and invite neighbors to help.
+Common Ground is a playable cartoon map that starts in the East Bay and zooms out across the Bay Area, connecting environmental learning with real community places and garden projects. Visit a farm, park, garden, or library; experiment with soil, water, plants, and shared resources; then check a planting spot and invite neighbors to help.
 
 Built for Hack for Social Impact 2026, combining the East Bay Permaculture Guild’s regeneration-map challenge with UNCCD’s youth land-use education challenge.
 
 ![Common Ground’s cartoon map connecting West Oakland, Lake Merritt, and Ivy Hill](artifacts/common-ground-overview.png)
 
-**Current scope:** a working local pilot with four illustrated destinations, ten learning discoveries, six starter plants, and fifteen curated directory entries. The map is called **East Bay**; its playable geography currently covers **West Oakland, Lake Merritt, and Ivy Hill**, rather than the entire region.
+**Current scope:** a working local pilot with four illustrated destinations, ten learning discoveries, six starter plants, and fifteen curated directory entries. The starting view remains **West Oakland, Lake Merritt, and Ivy Hill**. Zoom out to a generalized **Bay Area** map covering the nine-county region and some neighboring context; planting checks and garden proposals work across this wider window. Detailed site geometry, environmental data, and the four learning destinations remain in the Oakland pilot.
 
 ## Why this project
 
@@ -41,9 +41,12 @@ This is an independent prototype. Integration with the Guild’s existing tools 
 ### A real neighborhood, illustrated
 
 - One continuous map based on OpenStreetMap streets, buildings, parks, and Lake Merritt, with original SVG artwork.
+- A lightweight Bay Area overview with real coastline, major roads, urban areas, and city labels. Use **−** to zoom out or the **globe** to fit the region; the **frame** button restores the original Oakland view.
 - Four visitable places: **West Oakland Farm Park**, **deFremery Park**, **Gravity Garden**, and **West Oakland Library**.
 - Pan, zoom, whole-map reset, keyboard controls, reduced motion, and readable desktop and phone layouts.
 - An animated character travels along precomputed street routes between destinations.
+
+![Common Ground zoomed out to the Bay Area](artifacts/bay-area-overview.png)
 
 ### Learn by interacting
 
@@ -58,6 +61,8 @@ This is an independent prototype. Integration with the Guild’s existing tools 
 Click an empty map spot, or use **Check a spot** on an existing destination. The app combines mapped context and approximate terrain with six observations: **sun, water, drainage, growing area, soil review, and season**.
 
 Compare tomatoes, lettuce, kale, California poppy, California fuchsia, and California buckwheat. Each gets a preliminary **Check first**, **Needs a change**, or **Promising** result, with reasons, care information, and primary sources. Unknown observations stay unknown. Selected plants carry into a garden proposal.
+
+Outside the Oakland pilot, the map offers general regional context. Site details, elevation, slope, and local climate remain **Unknown** until suitable data is added; the app does not apply Oakland’s climate reference to the rest of the Bay Area. Plant matches still use your observations and need local variety/site review.
 
 ![Planting check with site questions and starter-plant matches](artifacts/east-bay-plant-check.png)
 
@@ -124,6 +129,7 @@ The interface uses **React, TypeScript, and Vite**. The cartoon world and activi
 | Layer | Implementation | Persistence |
 | --- | --- | --- |
 | Exploration and journal | `src/exploration/` | Validated browser storage, with a previous-trip backup and Markdown export. |
+| Map and camera | Local Oakland geometry plus `src/data/bay-area-map.json` | Saved vector layers fetched separately; no runtime map API for the cartoon world. |
 | Planting checks | `src/community/` plus `src/data/site-environment.json` | Saved environmental baseline; visitor answers can accompany a proposal. |
 | Garden projects and teams | `/api/community`, mounted by Vite in dev and preview | Local SQLite at `.local-data/gardens.sqlite`. |
 | Curated directory | `src/data/resources.ts` | Git-managed seed data; correction/review demo changes stay in that browser. |
@@ -161,8 +167,8 @@ Earlier parcel-grid prototype modules remain in the source for reference; the cu
 | Information | Where it comes from | How to interpret it |
 | --- | --- | --- |
 | Place listings | Public provider websites, checked October 24–25, 2026 | Source checks do not establish partnership, current availability, youth eligibility, or permission to enter. |
-| Map geography | Attributed OpenStreetMap extracts | Approximate game wayfinding; illustrations are not surveyed site layouts or navigation instructions. |
-| Climate | One regional ERA5 reference for 2016–2025, approximately 25 km resolution | Historical modeled context, not parcel weather, a hardiness-zone lookup, or official 30-year normals. |
+| Map geography | Attributed OpenStreetMap extracts and a Natural Earth regional overview | Oakland has detailed geometry; the wider overview is generalized at 1:10 million scale, with OSM city labels. Neither is surveyed site evidence or navigation instructions. |
+| Climate | One Oakland ERA5 reference for 2016–2025, approximately 25 km resolution | Historical modeled context, not parcel weather, a hardiness-zone lookup, or official 30-year normals. Unknown outside the pilot. |
 | Terrain | 504 samples derived from Copernicus DEM GLO-90 | Approximate elevation and area slope; small beds, walls, and drains are unresolved. |
 | Plant suitability | Visitor observations and simplified rules informed by UC ANR and Calscape | A preliminary shortlist; sun, soil chemistry, contamination, ownership, and utilities are not measured. |
 | Learning outcomes | Authored game rules with explanatory sources from UNCCD, EBMUD, EPA, and USDA NRCS | Tokens and 0–100 indicators teach relationships and tradeoffs; their coefficients are not scientifically calibrated predictions. |
@@ -185,7 +191,7 @@ This is a planning estimate, not an agreed delivery commitment. Local use has no
 
 ## Validation and educational evaluation
 
-The current implementation passes **32 automated tests** and the TypeScript/production build. Browser playtests cover desktop and phone layouts, interactive lessons, planting checks, project creation, two-visitor participation, organizer controls, and persistence across restarts. See the [playtest report](docs/playtest-report.md).
+The current implementation passes **41 automated tests** and the TypeScript/production build. Browser playtests cover desktop and phone layouts, regional zoom and city exploration, interactive lessons, planting checks, project creation, two-visitor participation, organizer controls, and persistence across restarts. See the [playtest report](docs/playtest-report.md).
 
 Software checks do not establish educational effectiveness. The [evaluation plan](docs/evaluation-plan.md) proposes a facilitated session with 5–8 participants, before/after causal-reasoning prompts, and steward/reviewer feedback. Learning gains and real participation remain to be evaluated. Gameplay monitoring is outside the UNCCD brief’s scope.
 
@@ -195,7 +201,8 @@ Software checks do not establish educational effectiveness. The [evaluation plan
 - **Change a lesson or plant rule:** update the relevant content/model files, document assumptions, seek knowledgeable review, and run the tests and build.
 - **Refresh geographic data:** follow [map provenance](docs/map-provenance.md). Python 3 is needed only for optional map regeneration.
 - **Refresh environmental data:** follow [planting and project implementation](docs/planting-and-projects.md). Normal setup uses the committed baseline.
-- **Adapt another region:** replace the map/anchors and regional baseline, then curate local places and activities. Geography, content, and rules are separated, but a new region still needs review and development.
+- **Expand within the Bay Area:** add reviewed local geometry, environmental coverage, places, and learning activities to the regional map. Keep unavailable measurements unknown. Geography, content, and rules are separated, but new destinations still need source checks and review.
+- **Adapt another region:** replace the overview/coverage bounds and local map/anchors, then curate local places, environmental baselines, and activities.
 
 Local directory approval does not publish to GitHub or update generated pages. Curated changes need repository review and a rebuild. The [manual discovery prompt](docs/resource-discovery.md) supports finding candidates for human review; no scheduled crawler is implemented.
 
@@ -207,6 +214,6 @@ Local directory approval does not publish to GitHub or update generated pages. C
 - [Proposed educational evaluation](docs/evaluation-plan.md)
 - [Implementation playtests](docs/playtest-report.md)
 
-Map data: **© OpenStreetMap contributors**, distributed under [ODbL 1.0](https://www.openstreetmap.org/copyright). Climate and elevation credits, source requests, dates, and resolutions are retained in the data and provenance documentation. Illustrations are original SVG artwork; dependencies retain their upstream licenses.
+Map data: **© OpenStreetMap contributors**, distributed under [ODbL 1.0](https://www.openstreetmap.org/copyright). Regional land, water, roads, and urban-area geometry: [Natural Earth](https://www.naturalearthdata.com/), [public domain](https://www.naturalearthdata.com/about/terms-of-use/). City labels retain OSM attribution. Climate and elevation credits, source requests, dates, and resolutions are retained in the data and provenance documentation. Illustrations are original SVG artwork; dependencies retain their upstream licenses.
 
 The repository is public. No project-wide source-code license has been selected yet.

@@ -1,4 +1,4 @@
-import { inPilot } from './geography.ts'
+import { inBayArea } from './geography.ts'
 import { plants } from './plants.ts'
 import type { HelpRole, JoinInput, ProjectInput, SiteConditions } from './types.ts'
 
@@ -65,7 +65,7 @@ export function validateConditions(value: unknown): SiteConditions {
 export function validateProject(value: unknown): ProjectInput {
   const input = object(value), site = object(input.site)
   const latitude = number(site.latitude, 'Latitude', -90, 90), longitude = number(site.longitude, 'Longitude', -180, 180)
-  if (!inPilot(latitude, longitude)) throw new InputError('Choose a spot inside the East Bay pilot map.')
+  if (!inBayArea(latitude, longitude)) throw new InputError('Choose a spot inside the Bay Area map.')
   const selectedPlants = choices(input.plants, plants.map(plant => plant.id), 'plants')
   const otherPlants = text(input.otherPlants, 'Other plants', 0, 160)
   if (!selectedPlants.length && !otherPlants) throw new InputError('Choose what you want to grow.')

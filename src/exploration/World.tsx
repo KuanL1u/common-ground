@@ -1,9 +1,9 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
-import { ArrowRight, BookOpen, Check, Compass, Footprints, MapPin, Minus, Plus, Scan, Sprout, Users } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, Compass, Footprints, Globe2, MapPin, Minus, Plus, Scan, Sprout, Users } from 'lucide-react'
 import { Modal } from '../components/Modal.tsx'
 import { useCommunity } from '../community/client.ts'
-import { describeSite, geographicPoint, mapPoint } from '../community/geography.ts'
+import { describeSite, geographicPoint, inPilot, mapPoint } from '../community/geography.ts'
 import { emptyConditions } from '../community/plants.ts'
 import { ProjectForm } from '../community/ProjectForm.tsx'
 import { ProjectBoard, ProjectDetail } from '../community/Projects.tsx'
@@ -12,11 +12,13 @@ import type { GardenProject, PlantId, ProjectKind, SelectedSite, SiteConditions,
 import { FarmVignette, LibraryBuilding, ParkVignette, Person, Tree } from './Art.tsx'
 import { GardenVignette } from './GardenArt.tsx'
 import { hotspotOrder, placeById, places } from './content.ts'
-import type { NeighborhoodGeometry } from './geography.ts'
+import type { BayAreaGeometry, NeighborhoodGeometry } from './geography.ts'
+import { bayAreaCamera, clampCamera, initialCamera, screenToWorld, startingScale, zoomCamera } from './map-camera.ts'
+import type { Camera } from './map-camera.ts'
+import { RegionalBase, RegionalLabels } from './RegionalMap.tsx'
 import type { ExplorationState, PlaceId } from './types.ts'
 
 type Point = number[]
-type Camera = { zoom: number; x: number; y: number }
 type MapMode = 'explore' | 'check' | 'create'
 type CommunityDialog = 'site' | 'create' | 'board' | 'project' | 'edit' | null
 const line = (points: Point[]) => points.map((p, i) => `${i ? 'L' : 'M'}${p[0]} ${p[1]}`).join(' ')
@@ -24,9 +26,8 @@ const closedLine = (points: Point[]) => `${line(points)} Z`
 const roadWidth = (kind: string) => kind === 'motorway' || kind === 'trunk' ? 22 : kind === 'secondary' || kind === 'tertiary' ? 14 : kind === 'residential' ? 9 : kind === 'footway' || kind === 'path' ? 3 : 6
 const houseColors = ['#d4b9a3', '#d4c6a5', '#b9c9b8', '#c6b9af', '#b8c9c8', '#d5b7a0', '#c9cba9']
 const namedStreets = ['Peralta Street', 'Adeline Street', 'Market Street', 'West Grand Avenue', 'San Pablo Avenue', 'Broadway', 'Grand Avenue', 'Lakeshore Avenue', '7th Avenue', 'Park Boulevard']
-const defaultCamera = (map: NeighborhoodGeometry): Camera => ({ zoom: 1, x: map.width / 2, y: map.height / 2 })
 
-const MapBase = memo(function MapBase({ map }: { map: NeighborhoodGeometry }) {
+const MapBase = memo(function MapBase({ map, hidden }: { map: NeighborhoodGeometry; hidden: boolean }) {
   // Group the real footprints by roof color so the larger map stays responsive.
   const roofs = useMemo(() => houseColors.map((color, index) => ({
     color,
@@ -35,7 +36,7 @@ const MapBase = memo(function MapBase({ map }: { map: NeighborhoodGeometry }) {
   const roads = useMemo(() => [...new Set(map.roads.map(r => r.kind))].map(kind => ({
     kind, path: map.roads.filter(r => r.kind === kind).map(r => line(r.points)).join(' '),
   })), [map])
-  return <g className="world-base" aria-hidden="true">
+  return <g className="world-base" aria-hidden="true" display={hidden ? 'none' : undefined}>
     <defs>
       <pattern id="ground-grain" width="39" height="39" patternUnits="userSpaceOnUse"><circle cx="8" cy="12" r=".8" fill="#a6b58d" opacity=".3" /><circle cx="29" cy="31" r=".9" fill="#a6b58d" opacity=".25" /></pattern>
       <pattern id="roof-lines" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(-25)"><path d="M0 0 L0 12" stroke="#fff5dc" strokeWidth="1.3" opacity=".22" /></pattern>
@@ -85,15 +86,17 @@ function PlaceDrawing({ id, point, visited, completed, onVisit, disabled, compac
   </g>
 }
 
-function EastBayMap({ map, state, location, travel, onVisit, mode, selected, projects, selectedProjectId, onChoose, onReopen, onProject }: {
+function EastBayMap({ map, state, location, travel, onVisit, mode, selected, projects, selectedProjectId, onChoose, onReopen, onProject, onRegionalView }: {
   map: NeighborhoodGeometry; state: ExplorationState; location: PlaceId; travel: PlaceId | null; onVisit: (id: PlaceId) => void
   mode: MapMode; selected: SelectedSite | null; projects: GardenProject[]; selectedProjectId: string | null
   onChoose: (point: Point, place?: PlaceId) => void; onReopen: () => void; onProject: (id: string) => void
+  onRegionalView: (regional: boolean) => void
 }) {
   const svg = useRef<SVGSVGElement>(null)
   const pan = useRef<{ x: number; y: number; camera: Camera; pointer: number; moved: boolean } | null>(null)
   const [viewport, setViewport] = useState({ width: 1200, height: 740 })
-  const [camera, setCamera] = useState(() => defaultCamera(map))
+  const [camera, setCamera] = useState(() => initialCamera(map))
+  const focusedProject = useRef<string | null>(null)
   useEffect(() => {
     const element = svg.current!
     const observer = new ResizeObserver(([entry]) => setViewport({ width: entry.contentRect.width, height: entry.contentRect.height }))
@@ -101,17 +104,29 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
     return () => observer.disconnect()
   }, [])
   const compact = viewport.width < 650
-  const scale = Math.min(viewport.width / map.width, viewport.height / map.height) * camera.zoom
+  const center = geographicPoint(map, [camera.x, camera.y])
+  const regionalView = Boolean(map.region && (camera.zoom < .7 || center && !inPilot(center.latitude, center.longitude)))
+  const minimumZoom = map.region ? bayAreaCamera(map, viewport).zoom : 1
+  const scale = startingScale(map, viewport) * camera.zoom
   const tx = viewport.width / 2 - camera.x * scale
   const ty = viewport.height / 2 - camera.y * scale
   const screenPoint = ([x, y]: Point) => [tx + x * scale, ty + y * scale]
-  const clampCamera = (next: Camera) => {
-    const nextScale = Math.min(viewport.width / map.width, viewport.height / map.height) * next.zoom
-    const limitX = viewport.width / nextScale / 2
-    const limitY = viewport.height / nextScale / 2
-    return { ...next, x: limitX >= map.width / 2 ? map.width / 2 : Math.max(limitX, Math.min(map.width - limitX, next.x)), y: limitY >= map.height / 2 ? map.height / 2 : Math.max(limitY, Math.min(map.height - limitY, next.y)) }
-  }
-  const zoom = (direction: number) => setCamera(current => clampCamera({ ...current, zoom: Math.max(1, Math.min(6, current.zoom + direction * .5)) }))
+  const zoom = (direction: number) => setCamera(current => zoomCamera(map, viewport, current, direction))
+  const restoreOakland = () => setCamera(initialCamera(map))
+  useEffect(() => { onRegionalView(regionalView) }, [regionalView, onRegionalView])
+  useEffect(() => { setCamera(current => clampCamera(map, viewport, current)) }, [map, viewport])
+  useEffect(() => { if (travel) setCamera(initialCamera(map)) }, [travel, map])
+  useEffect(() => {
+    if (!selectedProjectId) { focusedProject.current = null; return }
+    if (selectedProjectId === focusedProject.current) return
+    const project = projects.find(item => item.id === selectedProjectId)
+    if (!project || !map.region) return
+    focusedProject.current = selectedProjectId
+    if (!inPilot(project.site.latitude, project.site.longitude)) {
+      const [x, y] = mapPoint(map, project.site)
+      setCamera(clampCamera(map, viewport, { zoom: .35, x, y }))
+    }
+  }, [selectedProjectId, projects, map, viewport])
   const finishPan = (event: PointerEvent<SVGSVGElement>, cancelled = false) => {
     if (pan.current?.pointer !== event.pointerId) return
     const picked = !pan.current.moved && !cancelled && !travel
@@ -119,7 +134,7 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
     if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId)
     if (picked && svg.current) {
       const bounds = svg.current.getBoundingClientRect()
-      onChoose([((event.clientX - bounds.left) * viewport.width / bounds.width - tx) / scale, ((event.clientY - bounds.top) * viewport.height / bounds.height - ty) / scale])
+      onChoose(screenToWorld(map, viewport, camera, [(event.clientX - bounds.left) * viewport.width / bounds.width, (event.clientY - bounds.top) * viewport.height / bounds.height]))
     }
   }
   const route = travel && travel !== location ? map.routes[`${location}-${travel}`] : null
@@ -133,12 +148,13 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
   const lakePoint = lake ? [lake.points.reduce((sum, p) => sum + p[0], 0) / lake.points.length, lake.points.reduce((sum, p) => sum + p[1], 0) / lake.points.length] : null
   const selectedPoint = selected ? screenPoint(mapPoint(map, selected)) : null
   return <div className={`neighborhood-canvas map-mode-${mode}`}>
-    <p className="sr-only" id="map-picking-help">Tap an empty spot for a plant check. Drag to pan. Use zoom controls and arrow keys to move the map; Enter chooses its center. Garden pins open neighborhood projects.</p>
-    <svg ref={svg} tabIndex={0} viewBox={`0 0 ${viewport.width} ${viewport.height}`} className="neighborhood-svg" role="group" aria-label="Interactive cartoon map of East Bay: West Oakland, Lake Merritt, and Ivy Hill" aria-describedby="map-picking-help" onKeyDown={event => {
+    <p className="sr-only" id="map-picking-help">Tap an empty spot for a plant check. Drag to pan. Zoom out or use the globe to see the Bay Area; the frame returns to Oakland. Arrow keys move the map; Enter chooses its center. Garden pins open neighborhood projects.</p>
+    <svg ref={svg} tabIndex={0} viewBox={`0 0 ${viewport.width} ${viewport.height}`} className="neighborhood-svg" role="group" aria-label={regionalView ? 'Interactive cartoon map of the Bay Area' : 'Interactive cartoon map of East Bay: West Oakland, Lake Merritt, and Ivy Hill'} aria-describedby="map-picking-help" onKeyDown={event => {
       if (event.target !== svg.current || travel) return
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onChoose([camera.x, camera.y]); return }
+      if (event.key === '+' || event.key === '=' || event.key === '-') { event.preventDefault(); zoom(event.key === '-' ? -1 : 1); return }
       const movement: Record<string, Point> = { ArrowLeft: [-90, 0], ArrowRight: [90, 0], ArrowUp: [0, -90], ArrowDown: [0, 90] }
-      if (movement[event.key]) { event.preventDefault(); const [dx, dy] = movement[event.key]; setCamera(current => clampCamera({ ...current, zoom: Math.max(2, current.zoom), x: current.x + dx / scale, y: current.y + dy / scale })) }
+      if (movement[event.key]) { event.preventDefault(); const [dx, dy] = movement[event.key]; setCamera(current => clampCamera(map, viewport, { ...current, x: current.x + dx / scale, y: current.y + dy / scale })) }
     }} onPointerDown={event => {
       if ((event.target as Element).closest('[data-destination], [data-map-action]') || event.button !== 0 || travel) return
       pan.current = { x: event.clientX, y: event.clientY, camera, pointer: event.pointerId, moved: false }
@@ -148,16 +164,17 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
       const start = pan.current
       if (Math.hypot(event.clientX - start.x, event.clientY - start.y) < 7 && !start.moved) return
       start.moved = true
-      setCamera(clampCamera({ ...start.camera, x: start.camera.x - (event.clientX - start.x) / scale, y: start.camera.y - (event.clientY - start.y) / scale }))
+      setCamera(clampCamera(map, viewport, { ...start.camera, x: start.camera.x - (event.clientX - start.x) / scale, y: start.camera.y - (event.clientY - start.y) / scale }))
     }} onPointerUp={event => finishPan(event)} onPointerCancel={event => finishPan(event, true)}>
       <g transform={`translate(${tx} ${ty}) scale(${scale})`}>
-        <MapBase map={map} />
+        <RegionalBase map={map} scale={scale} />
+        <MapBase map={map} hidden={camera.zoom < .7} />
         {routePath && <path d={routePath} fill="none" stroke="#9e7f3c" strokeWidth={3 / scale} strokeDasharray={`${5 / scale} ${6 / scale}`} opacity=".9" />}
-        {routePath ? <g key={travel} className="map-walker"><Person scale={.6 / scale} walking /><animateMotion path={routePath} dur="1.3s" fill="freeze" /></g> : arrival && <Person x={arrival[0]} y={arrival[1]} scale={.55 / scale} />}
+        {routePath ? <g key={travel} className="map-walker"><Person scale={.6 / scale} walking /><animateMotion path={routePath} dur="1.3s" fill="freeze" /></g> : !regionalView && arrival && <Person x={arrival[0]} y={arrival[1]} scale={.55 / scale} />}
       </g>
       <g aria-hidden="true" className="map-labels" fill="#5f7353" fontSize={compact ? 15 : 19} fontWeight="600" stroke="#edf0dc" strokeWidth="5" paintOrder="stroke" textAnchor="middle">
-        {!compact && camera.zoom < 2 && <><text x={screenPoint([300, 550])[0]} y={screenPoint([300, 550])[1]}>West Oakland</text><text x={screenPoint([2220, 940])[0]} y={screenPoint([2220, 940])[1]}>Ivy Hill</text></>}
-        {lakePoint && (!compact || camera.zoom >= 2) && <text x={screenPoint(lakePoint)[0]} y={screenPoint(lakePoint)[1]} fill="#39767e" stroke="#acd0cf">Lake Merritt</text>}
+        {!regionalView && !compact && camera.zoom < 2 && <><text x={screenPoint([300, 550])[0]} y={screenPoint([300, 550])[1]}>West Oakland</text><text x={screenPoint([2220, 940])[0]} y={screenPoint([2220, 940])[1]}>Ivy Hill</text></>}
+        {!regionalView && lakePoint && (!compact || camera.zoom >= 2) && <text x={screenPoint(lakePoint)[0]} y={screenPoint(lakePoint)[1]} fill="#39767e" stroke="#acd0cf">Lake Merritt</text>}
       </g>
       {camera.zoom >= 2 && <g aria-hidden="true" fill="#5b6756" fontSize="15" fontWeight="550" stroke="#fcf7e5" strokeWidth="4" paintOrder="stroke" textAnchor="middle">{streetLabels.map(road => {
         const start = screenPoint(road.points[0]), end = screenPoint(road.points.at(-1)!)
@@ -168,7 +185,8 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
         const [x, y] = screenPoint(road.points[Math.floor(road.points.length / 2)])
         return <text key={road.id} x={x} y={y} transform={`rotate(${angle} ${x} ${y})`}>{road.name.replace(' Street', ' St').replace(' Avenue', ' Ave')}</text>
       })}</g>}
-      {places.map(place => {
+      {regionalView && <RegionalLabels map={map} width={viewport.width} height={viewport.height} screenPoint={screenPoint} compact={compact} overview={camera.zoom < .12} picking={mode !== 'explore'} onOakland={restoreOakland} onCity={point => setCamera(clampCamera(map, viewport, { zoom: .35, x: point[0], y: point[1] }))} />}
+      {!regionalView && places.map(place => {
         const anchor = map.anchors[place.id]
         if (!anchor) return null
         const point = screenPoint(anchor.point)
@@ -189,10 +207,10 @@ function EastBayMap({ map, state, location, travel, onVisit, mode, selected, pro
       {selectedPoint && <g className="selected-site-pin" transform={`translate(${selectedPoint[0]} ${selectedPoint[1]})`} data-map-action="selected-site" role="button" tabIndex={travel ? -1 : 0} aria-label="Reopen selected spot planting check" onClick={event => { event.stopPropagation(); if (!travel) onReopen() }} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); if (!travel) onReopen() } }}><circle r="26" fill="#e9cc7a" opacity=".35" /><circle r="10" fill="#d6a550" stroke="#fffbed" strokeWidth="3" /><path d="M0 -19 V-29 M0 19 V29 M-19 0 H-29 M19 0 H29" stroke="#986d32" strokeWidth="2.5" strokeLinecap="round" /></g>}
       {mode !== 'explore' && <g className="map-center-target" transform={`translate(${viewport.width / 2} ${viewport.height / 2})`} aria-hidden="true"><circle r="12" /><path d="M-19 0 H-6 M6 0 H19 M0 -19 V-6 M0 6 V19" /></g>}
     </svg>
-    <div className="map-zoom" role="group" aria-label="Map controls"><button aria-label="Zoom in map" onClick={() => zoom(1)} disabled={camera.zoom >= 6}><Plus size={22} /></button><button aria-label="Zoom out map" onClick={() => zoom(-1)} disabled={camera.zoom === 1}><Minus size={22} /></button><button aria-label="Show whole East Bay" onClick={() => setCamera(defaultCamera(map))}><Scan size={21} /></button></div>
-    <div className="map-play-hint" role="status">{travel ? <><Footprints size={18} />To {placeById[travel].shortName}…</> : mode === 'create' ? <><Sprout size={18} />Tap your garden spot</> : mode === 'check' ? <><MapPin size={18} />Tap a spot to check</> : <><Compass size={18} />{compact ? 'Tap & drag' : 'Tap a place or spot · drag to explore'}</>}</div>
+    <div className="map-zoom" role="group" aria-label="Map controls"><button aria-label="Zoom in map" title="Zoom in" onClick={() => zoom(1)} disabled={Boolean(travel) || camera.zoom >= 6}><Plus size={22} /></button><button aria-label="Zoom out map" title="Zoom out" onClick={() => zoom(-1)} disabled={Boolean(travel) || camera.zoom <= minimumZoom + 1e-9}><Minus size={22} /></button><button aria-label="Show whole Bay Area" title={map.region ? 'Whole Bay Area' : 'Loading Bay Area…'} disabled={!map.region || Boolean(travel)} onClick={() => setCamera(bayAreaCamera(map, viewport))}><Globe2 size={22} /></button><button aria-label="Show whole East Bay" title="Back to Oakland" disabled={Boolean(travel)} onClick={restoreOakland}><Scan size={21} /></button></div>
+    <div className="map-play-hint" role="status">{travel ? <><Footprints size={18} />To {placeById[travel].shortName}…</> : mode === 'create' ? <><Sprout size={18} />Tap your garden spot</> : mode === 'check' ? <><MapPin size={18} />Tap a spot to check</> : <><Compass size={18} />{compact ? 'Tap & drag' : regionalView ? 'Tap a city or spot · drag to explore' : 'Tap a place or spot · drag to explore'}</>}</div>
     {mode !== 'explore' && <button className="pick-map-center" disabled={Boolean(travel)} onClick={() => onChoose([camera.x, camera.y])}><MapPin size={18} />Choose center</button>}
-    <a className="world-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
+    <div className="world-attribution"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>{map.region && <><span> · </span><a href={map.region.source.url} target="_blank" rel="noreferrer">Natural Earth</a></>}</div>
   </div>
 }
 
@@ -200,7 +218,12 @@ export function World({ state, location, travel, onVisit, onJournal, onHow, sele
   state: ExplorationState; location: PlaceId; travel: PlaceId | null; onVisit: (id: PlaceId) => void; onJournal: () => void; onHow: () => void
   selectedProjectId: string | null; onProjectChange: (id: string | null) => void; onNotice: (text: string, error?: boolean) => void
 }) {
-  const [map, setMap] = useState<NeighborhoodGeometry | null>(null)
+  const [localMap, setMap] = useState<NeighborhoodGeometry | null>(null)
+  const [region, setRegion] = useState<BayAreaGeometry | null>(null)
+  const [regionalView, setRegionalView] = useState(false)
+  const [regionError, setRegionError] = useState(false)
+  const [regionAttempt, setRegionAttempt] = useState(0)
+  const map = useMemo(() => localMap ? { ...localMap, ...(region ? { region } : {}) } : null, [localMap, region])
   const [error, setError] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const client = useCommunity()
@@ -238,6 +261,15 @@ export function World({ state, location, travel, onVisit, onJournal, onHow, sele
     }).then(setMap).catch(() => { if (!controller.signal.aborted) setError(true) })
     return () => controller.abort()
   }, [attempt])
+  useEffect(() => {
+    const controller = new AbortController()
+    setRegionError(false)
+    fetch('/data/bay-area-map.json', { signal: controller.signal }).then(response => {
+      if (!response.ok) throw new Error('Regional map unavailable')
+      return response.json() as Promise<BayAreaGeometry>
+    }).then(setRegion).catch(() => { if (!controller.signal.aborted) setRegionError(true) })
+    return () => controller.abort()
+  }, [regionAttempt])
   const closeCommunity = () => { setCommunityDialog(null); onProjectChange(null) }
   const openProject = (id: string) => { onProjectChange(id); setCommunityDialog('project') }
   const openBoard = () => { onProjectChange(null); setCommunityDialog('board') }
@@ -259,11 +291,12 @@ export function World({ state, location, travel, onVisit, onJournal, onHow, sele
   const savedProject = (saved: GardenProject) => { setMode('explore'); setSite(null); setEditingProject(null); openProject(saved.id); onNotice(editingProject ? 'Garden plan updated.' : 'Your garden idea is on the map.') }
   const count = Object.keys(state.entries).length
   return <div className="exploration-world">
-    <section className="explore-hero"><div><h1>East <em>Bay.</em></h1><p>Explore a place. Plant an idea.</p></div><button className="journal-pill" onClick={onJournal}><BookOpen size={24} /><span><strong>My journal</strong><small>{count}/{hotspotOrder.length} discoveries</small></span><ArrowRight size={19} /></button></section>
+    <section className="explore-hero"><div><h1>{regionalView ? <>Bay <em>Area.</em></> : <>East <em>Bay.</em></>}</h1><p>Explore a place. Plant an idea.</p></div><button className="journal-pill" onClick={onJournal}><BookOpen size={24} /><span><strong>My journal</strong><small>{count}/{hotspotOrder.length} discoveries</small></span><ArrowRight size={19} /></button></section>
     <div className="world-toolbar" role="group" aria-label="Explore, check, and grow"><div className="world-modes"><button aria-pressed={mode === 'explore'} disabled={Boolean(travel)} onClick={() => pickMode('explore')}><Compass size={20} />Explore</button><button aria-pressed={mode === 'check'} disabled={Boolean(travel)} onClick={() => pickMode('check')}><MapPin size={20} />Check a spot</button><button aria-pressed={mode === 'create'} disabled={Boolean(travel)} onClick={() => pickMode('create')}><Sprout size={21} />Start a garden</button></div><button className="world-projects-button" aria-label="Garden projects" disabled={Boolean(travel)} onClick={openBoard}><Users size={21} />Projects <span>{client.loading ? '…' : client.error ? '?' : client.projects.length}</span></button></div>
-    <section className="world-panel" aria-label="Explore East Bay">
-      {map ? <EastBayMap map={map} state={state} location={location} travel={travel} onVisit={onVisit} mode={mode} selected={site} projects={client.projects} selectedProjectId={selectedProjectId} onChoose={choose} onReopen={() => setCommunityDialog('site')} onProject={openProject} /> : <div className="neighborhood-canvas view-loading" role="status">{error ? <><p>Map couldn’t load.</p><button className="button button-secondary" onClick={() => setAttempt(value => value + 1)}>Try again</button></> : 'Opening East Bay…'}</div>}
+    <section className="world-panel" aria-label={regionalView ? 'Explore the Bay Area' : 'Explore East Bay'}>
+      {map ? <EastBayMap map={map} state={state} location={location} travel={travel} onVisit={onVisit} mode={mode} selected={site} projects={client.projects} selectedProjectId={selectedProjectId} onChoose={choose} onReopen={() => setCommunityDialog('site')} onProject={openProject} onRegionalView={setRegionalView} /> : <div className="neighborhood-canvas view-loading" role="status">{error ? <><p>Map couldn’t load.</p><button className="button button-secondary" onClick={() => setAttempt(value => value + 1)}>Try again</button></> : 'Opening East Bay…'}</div>}
     </section>
+    {regionError && <p className="regional-map-error" role="status">Bay Area overview couldn’t load. <button onClick={() => setRegionAttempt(value => value + 1)}>Retry overview</button></p>}
     <p className="world-community-note">{client.error ? <><span role="status">Garden projects couldn’t refresh.</span><button onClick={() => { void client.refresh() }}>Retry</button></> : <><Sprout size={17} />Projects shared locally · Pins are proposals</>}</p>
     <nav className="destination-list" aria-label="Places to visit">{places.map(place => {
       const found = place.hotspots.filter(id => state.entries[id]).length

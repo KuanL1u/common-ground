@@ -8,6 +8,7 @@
 .world-projects-button > span { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 5px; border-radius: 50%; background: #fafbee; font-size: 15px; }
 .world-community-note { display: flex; align-items: center; gap: 7px; min-height: 39px; padding: 7px 2px; color: #61705b; font-size: 15px; }
 .world-community-note button { text-decoration: underline; font-size: 15px; font-weight: 600; }
+.site-coverage-note { margin: -2px 0 20px; font-size: 16px; color: #63745d; }
 .map-mode-check .neighborhood-svg, .map-mode-create .neighborhood-svg { cursor: crosshair; }
 .map-mode-check .neighborhood-svg:active, .map-mode-create .neighborhood-svg:active { cursor: grabbing; }
 .project-pin, .selected-site-pin { cursor: pointer; }

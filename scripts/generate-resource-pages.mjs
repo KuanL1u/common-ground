@@ -24,6 +24,7 @@ for (const name of ['east-bay', 'west-oakland', 'ivy-hill']) {
   await copyFile(path.resolve(root, '..', 'src', 'data', `${name}-map.json`), path.join(root, 'data', `${name}-map.json`))
 }
 await copyFile(path.resolve(root, '..', 'src', 'data', 'site-environment.json'), path.join(root, 'data', 'site-environment.json'))
+await copyFile(path.resolve(root, '..', 'src', 'data', 'bay-area-map.json'), path.join(root, 'data', 'bay-area-map.json'))
 // This directory contains only this script's generated listing pages.
 await rm(path.join(root, 'projects'), { recursive: true, force: true })
 await mkdir(path.join(root, 'projects'), { recursive: true })
@@ -38,4 +39,4 @@ for (const resource of initialResources) {
 }
 const indexBody = `<p class="eyebrow">East Bay regeneration directory</p><h1>Find your people.<br>Grow something together.</h1><p>Source-checked public resources for growing, learning, and practical local action.</p>${initialResources.map((resource) => `<article class="card"><p class="small">${escape(resource.city)} · ${escape(resource.category)}</p><h2><a href="/projects/${escape(resource.id)}/index.html">${escape(resource.name)}</a></h2><p>${escape(resource.description)}</p></article>`).join('')}<p class="small">Machine-readable seed data: <a href="/data/resources.json">resources.json</a> · <a href="/data/practices.json">practices.json</a></p>`
 await writeFile(path.join(root, 'projects', 'index.html'), document('East Bay resources', 'Public community resources for gardening, learning, tools, and seeds in the East Bay.', indexBody))
-console.log(`Generated ${initialResources.length} readable resource pages, 2 directory exports, 3 map datasets, and planting-check data.`)
+console.log(`Generated ${initialResources.length} readable resource pages, 2 directory exports, 4 map datasets, and planting-check data.`)
