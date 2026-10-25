@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+public/projects/
+public/data/
+scripts/data/*.osm
+scripts/data/oakland-weather-*.json
+scripts/data/east-bay-elevation-*.json
+.local-data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Local planning notes and Notion exports
+/combined-project-research.md
+/implementation-plan.md
+/plan-comparison.md
+/west-oakland-exploration-plan.md
+/implementation-preview.jpg
+/notion-*.jpg
+
+# Captured third-party reference pages
+/artifacts/*.html

@@ -1,0 +1,90 @@
+{
+  "name": "OpenStreetMap API",
+  "checkedAt": "2026-10-25",
+  "extracts": [
+    {
+      "name": "0-0",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2990500,37.7964500,-122.2833250,37.8067167",
+      "filename": "scripts/data/east-bay-tile-0-0.osm",
+      "result": "HTTP 200; 6422413 bytes",
+      "ok": true
+    },
+    {
+      "name": "0-1",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2990500,37.8066167,-122.2833250,37.8168833",
+      "filename": "scripts/data/east-bay-tile-0-1.osm",
+      "result": "HTTP 200; 8695249 bytes",
+      "ok": true
+    },
+    {
+      "name": "0-2",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2990500,37.8167833,-122.2833250,37.8270500",
+      "filename": "scripts/data/east-bay-tile-0-2.osm",
+      "result": "HTTP 200; 5931269 bytes",
+      "ok": true
+    },
+    {
+      "name": "1-0",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2834250,37.7964500,-122.2677000,37.8067167",
+      "filename": "scripts/data/east-bay-tile-1-0.osm",
+      "result": "HTTP 200; 6137382 bytes",
+      "ok": true
+    },
+    {
+      "name": "1-1",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2834250,37.8066167,-122.2677000,37.8168833",
+      "filename": "scripts/data/east-bay-tile-1-1.osm",
+      "result": "HTTP 200; 6312176 bytes",
+      "ok": true
+    },
+    {
+      "name": "1-2",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2834250,37.8167833,-122.2677000,37.8270500",
+      "filename": "scripts/data/east-bay-tile-1-2.osm",
+      "result": "HTTP 200; 6585237 bytes",
+      "ok": true
+    },
+    {
+      "name": "2-0",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2678000,37.7964500,-122.2520750,37.8067167",
+      "filename": "scripts/data/east-bay-tile-2-0.osm",
+      "result": "HTTP 200; 4648369 bytes",
+      "ok": true
+    },
+    {
+      "name": "2-1",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2678000,37.8066167,-122.2520750,37.8168833",
+      "filename": "scripts/data/east-bay-tile-2-1.osm",
+      "result": "HTTP 200; 5942482 bytes",
+      "ok": true
+    },
+    {
+      "name": "2-2",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2678000,37.8167833,-122.2520750,37.8270500",
+      "filename": "scripts/data/east-bay-tile-2-2.osm",
+      "result": "HTTP 200; 6210523 bytes",
+      "ok": true
+    },
+    {
+      "name": "3-0",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2521750,37.7964500,-122.2364500,37.8067167",
+      "filename": "scripts/data/east-bay-tile-3-0.osm",
+      "result": "HTTP 200; 7776696 bytes",
+      "ok": true
+    },
+    {
+      "name": "3-1",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2521750,37.8066167,-122.2364500,37.8168833",
+      "filename": "scripts/data/east-bay-tile-3-1.osm",
+      "result": "HTTP 200; 6749969 bytes",
+      "ok": true
+    },
+    {
+      "name": "3-2",
+      "url": "https://www.openstreetmap.org/api/0.6/map?bbox=-122.2521750,37.8167833,-122.2364500,37.8270500",
+      "filename": "scripts/data/east-bay-tile-3-2.osm",
+      "result": "HTTP 200; 6522249 bytes",
+      "ok": true
+    }
+  ]
+}
