@@ -50,6 +50,6 @@ Both servers bind to loopback. The API accepts local Host values and same-origin
 
 ## Online pilot boundary
 
-An online neighborhood pilot would add a hosted API/database, recoverable accounts, moderation, an agreed steward-permission process, and appropriate contact/privacy controls. The current local API accepts local hosts and same-origin writes. The source is maintained in the private [KuanL1u/common-ground repository](https://github.com/KuanL1u/common-ground); an online deployment remains future work.
+An online neighborhood pilot would add a hosted API/database, recoverable accounts, moderation, an agreed steward-permission process, and appropriate contact/privacy controls. The current local API accepts local hosts and same-origin writes. The source is maintained in the public [KuanL1u/common-ground repository](https://github.com/KuanL1u/common-ground); an online deployment remains future work.
 
 The sources support preliminary planning and learning. A youth/steward review and a real educational evaluation remain separate from software playtesting.

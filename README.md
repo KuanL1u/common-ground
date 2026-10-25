@@ -82,7 +82,7 @@ The wider **Places** directory contains **15 source-checked entries**: 14 public
 
 ## Set up locally
 
-**Requirements:** Node.js **24 or newer**, npm, Git, and access to this private repository. Node’s built-in SQLite powers the project API. No containers, API keys, or separate database installation are needed.
+**Requirements:** Node.js **24 or newer**, npm, and Git. Node’s built-in SQLite powers the project API. No containers, API keys, or separate database installation are needed.
 
 ```sh
 git clone https://github.com/KuanL1u/common-ground.git
@@ -209,4 +209,4 @@ Local directory approval does not publish to GitHub or update generated pages. C
 
 Map data: **© OpenStreetMap contributors**, distributed under [ODbL 1.0](https://www.openstreetmap.org/copyright). Climate and elevation credits, source requests, dates, and resolutions are retained in the data and provenance documentation. Illustrations are original SVG artwork; dependencies retain their upstream licenses.
 
-The repository is private during development. No project-wide source-code license has been selected yet; agree licensing and handover before wider community distribution.
+The repository is public. No project-wide source-code license has been selected yet.
